@@ -7,6 +7,10 @@ import java.io.InputStreamReader;
   
 
 
+
+
+
+
 import org.apache.lucene.analysis.Analyzer;  
 import org.apache.lucene.analysis.standard.StandardAnalyzer;  
 import org.apache.lucene.document.Document;  
@@ -16,16 +20,21 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;  
 import org.apache.lucene.index.IndexWriter;  
 import org.apache.lucene.index.IndexWriterConfig;  
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;  
 import org.apache.lucene.search.IndexSearcher;  
 import org.apache.lucene.search.Query;  
 import org.apache.lucene.search.ScoreDoc;  
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;  
 import org.apache.lucene.store.Directory;  
 import org.apache.lucene.store.FSDirectory;  
 import org.apache.lucene.util.Version;  
-  
+import org.wltea.analyzer.lucene.IKAnalyzer;
+
+import com.cyb.cse.IKSynonymsAnalyzer;
+  //http://blog.csdn.net/mdcmy/article/details/38167955
 public class LuceneFileIndex {  
 	public static String DataPath="d:\\lucene\\example";
 	public static String IndexPath="d:\\lucene\\index";
@@ -35,9 +44,9 @@ public class LuceneFileIndex {
      * @param analyzer  
      * @throws Exception  
      */  
-    public static void createIndex(Analyzer analyzer) throws Exception{  
+    public static void createIndex() throws Exception{  
         Directory dire=FSDirectory.open(new File(IndexPath));  
-        IndexWriterConfig iwc=new IndexWriterConfig(Version.LUCENE_46, analyzer);  
+        IndexWriterConfig iwc=new IndexWriterConfig(Version.LUCENE_36, analyzer);  
         IndexWriter iw=new IndexWriter(dire, iwc);  
         LuceneFileIndex.addDoc(iw);  
         iw.close();  
@@ -101,6 +110,20 @@ public class LuceneFileIndex {
             System.out.println(d.get("path"));   
         }  
     }  
+    private static void searchTerm(String words) throws Exception {  
+        Directory dire=FSDirectory.open(new File(IndexPath));  
+        IndexReader ir=DirectoryReader.open(dire);  
+        IndexSearcher is=new IndexSearcher(ir);
+        Query  query = new TermQuery(new Term("name",words));
+        //开始检索，并返回检索结果到hits中
+        TopDocs td=is.search(query, 1000);  
+        System.out.println("搜索句子:["+words+"],查询结果"+td.totalHits+"");  
+        ScoreDoc[] sds =td.scoreDocs;  
+        for (ScoreDoc sd : sds) {   
+            Document d = is.doc(sd.doc);   
+            System.out.println(d.get("path"));   
+        }  
+    }  
       
     public static  void deleteIndex(){
     	File file = new File(IndexPath);
@@ -108,24 +131,28 @@ public class LuceneFileIndex {
     		f.delete();
     	}
     }  
-    static Analyzer analyzer=new StandardAnalyzer(Version.LUCENE_46);  
+    //static Analyzer analyzer=new StandardAnalyzer(Version.LUCENE_46);  
+    //static Analyzer analyzer=new IKAnalyzer();  
+    static Analyzer analyzer=new IKSynonymsAnalyzer();  
     public static void start(String col,String words) throws Exception{
         QueryParser parser = new QueryParser(Version.LUCENE_46, col, analyzer);   
         Query query = parser.parse(words);  
         LuceneFileIndex.search(query,words);  
     }
     public static void main(String[] args) throws Exception, Exception {  
-    	//deleteIndex();
-    	//LuceneFileIndex.createIndex(analyzer);
+    	deleteIndex();
+    	LuceneFileIndex.createIndex();
     	String words = "开户";
     	String col ="name";
-    	start(col,words);
+    	/*start(col,words);
+    	System.out.println("----------------");*/
+    	start(col,"银期");
     	System.out.println("----------------");
-    	start(col,"我们的总理要开户");
+    	start(col,"期货");
     	System.out.println("----------------");
-    	start(col,"我先注册，后边在开户");
+    	/*start(col,"我先注册，后边在开户");
     	System.out.println("----------------");
     	start(col,"我去，密码丢了，咋办？");
-    	System.out.println("----------------");
+    	System.out.println("----------------");*/
     }  
 }  

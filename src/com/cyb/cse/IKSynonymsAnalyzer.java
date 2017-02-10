@@ -22,7 +22,7 @@ public class IKSynonymsAnalyzer extends Analyzer {
 	public static void main(String[] args) throws Exception {
 		// 下面这个分词器，是经过修改支持同义词的分词器
 		IKSynonymsAnalyzer analyzer = new IKSynonymsAnalyzer();
-		String text = "三劫散仙是一个菜鸟chenyb陈远豹iechenyb";
+		String text = "期货银期";
 		TokenStream ts = analyzer.tokenStream("field", new StringReader(text));
 		CharTermAttribute term = ts.addAttribute(CharTermAttribute.class);
 		ts.reset();// 重置做准备
