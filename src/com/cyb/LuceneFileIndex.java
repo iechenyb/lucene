@@ -11,10 +11,18 @@ import java.io.InputStreamReader;
 
 
 
+
+
+
+import java.util.Random;
+
 import org.apache.lucene.analysis.Analyzer;  
 import org.apache.lucene.analysis.standard.StandardAnalyzer;  
 import org.apache.lucene.document.Document;  
+import org.apache.lucene.document.DoubleField;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;  
+import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.TextField;  
 import org.apache.lucene.index.DirectoryReader;  
 import org.apache.lucene.index.IndexReader;  
@@ -67,7 +75,12 @@ public class LuceneFileIndex {
             doc.add(new TextField("content", content, Store.YES));  
             doc.add(new TextField("name", name, Store.YES));  
             doc.add(new TextField("path", path,Store.YES));  
-            System.out.println("创建索引文件："+path);  
+            Double version = new Random().nextDouble()*100;
+            Integer score = new Random().nextInt(100)+50;
+            Field field3 = new DoubleField("version", version, Store.YES);// 版本 DoubleField类型  
+            Field field4 = new IntField("score",score , Store.YES);// 评分 IntField类型 
+            doc.add(field3); doc.add(field4);
+            System.out.println("创建索引文件："+path+",version:"+version+",score:"+score);  
             iw.addDocument(doc);  
             iw.commit();  
         }  
@@ -132,8 +145,9 @@ public class LuceneFileIndex {
     	}
     }  
     //static Analyzer analyzer=new StandardAnalyzer(Version.LUCENE_46);  
-    //static Analyzer analyzer=new IKAnalyzer();  
-    static Analyzer analyzer=new IKSynonymsAnalyzer();  
+    static Analyzer analyzer=new IKAnalyzer(true
+    		);  
+    //static Analyzer analyzer=new IKSynonymsAnalyzer();  
     public static void start(String col,String words) throws Exception{
         QueryParser parser = new QueryParser(Version.LUCENE_46, col, analyzer);   
         Query query = parser.parse(words);  
@@ -149,6 +163,10 @@ public class LuceneFileIndex {
     	start(col,"银期");
     	System.out.println("----------------");
     	start(col,"期货");
+    	System.out.println("----------------");
+    	start(col,"期货期");//是词儿就不拆
+    	System.out.println("----------------");
+    	start(col,"期");//是词儿就不拆
     	System.out.println("----------------");
     	/*start(col,"我先注册，后边在开户");
     	System.out.println("----------------");
