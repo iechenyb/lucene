@@ -44,6 +44,7 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 import com.cyb.cse.IKSynonymsAnalyzer;
   //http://blog.csdn.net/mdcmy/article/details/38167955
 public class LuceneFileIndex {  
+	public static Version VERSION = Version.LUCENE_36;
 	public static String DataPath="d:\\lucene\\example";
 	public static String IndexPath="d:\\lucene\\index";
       
@@ -76,7 +77,7 @@ public class LuceneFileIndex {
             doc.add(new TextField("name", name, Store.YES));  
             doc.add(new TextField("path", path,Store.YES));  
             Double version = new Random().nextDouble()*100;
-            Integer score = new Random().nextInt(100)+50;
+            Integer score = new Random().nextInt(100)+30;
             Field field3 = new DoubleField("version", version, Store.YES);// 版本 DoubleField类型  
             Field field4 = new IntField("score",score , Store.YES);// 评分 IntField类型 
             doc.add(field3); doc.add(field4);
@@ -120,7 +121,7 @@ public class LuceneFileIndex {
         ScoreDoc[] sds =td.scoreDocs;  
         for (ScoreDoc sd : sds) {   
             Document d = is.doc(sd.doc);   
-            System.out.println(d.get("path"));   
+            System.out.println(d.get("name"));   
         }  
     }  
     private static void searchTerm(String words) throws Exception {  
@@ -134,7 +135,7 @@ public class LuceneFileIndex {
         ScoreDoc[] sds =td.scoreDocs;  
         for (ScoreDoc sd : sds) {   
             Document d = is.doc(sd.doc);   
-            System.out.println(d.get("path"));   
+            System.out.println(d.get("name"));   
         }  
     }  
       

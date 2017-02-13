@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="WebContent/lib/slf4j-api-1.7.16.jar"/>
 	<classpathentry kind="lib" path="WebContent/lib/slf4j-log4j12-1.7.21.jar"/>
 	<classpathentry kind="lib" path="WebContent/lib/IKAnalyzer2012FF_u1.jar"/>
+	<classpathentry kind="lib" path="WebContent/lib/lucene-highlighter-4.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
